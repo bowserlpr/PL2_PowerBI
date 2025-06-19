@@ -1,0 +1,15 @@
+id;cname;description
+10100;Auftragsverwaltung - beendet;AE-Auftragsverwaltung 2017 - beendet
+10200;Produktentwicklung;Produktentwicklung
+10300;Template;Template Projekte für Shared-Projekte
+10301;Projektverwaltung - laufend;Projektverwaltung - laufend
+10302;Integrationstest;System- und Projektübergreifende Integrationstests
+10303;Produkte;
+10304;R&D;
+10400;Projektverwaltung - beendet;für Projekte aus der Projektverwaltung, die beendet sind und nicht mehr reported werden sollen
+10500;Individualprojekt;Individualprojekt
+10501;ohne Kategorie;alle bestehenden Projekte, denen keine Kategorie zugeordnet war
+10600;Individualprojekt - beendet;
+10601;Individualprojekt - Organisation;
+10602;Individualprojekt - IT;
+10603;Individualprojekt - AM;

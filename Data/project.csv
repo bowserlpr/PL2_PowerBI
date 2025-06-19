@@ -1,0 +1,52 @@
+ID;PNAME;url;lead;description;pkey;pcounter;assigneetype;avatar;originalkey;projecttype
+11302;Schaden-/Leistungsregulierung;;b001411;am 26.11.2019 von Classic auf Scrum umgestellt;BOSS;12221;3;12326;BOSS;software
+11413;0085 Outputmanagement (Projekt beendet);;b000690;Das Projekt Outputmanagement hat folgende Kernziele: 1. Umsetzung eines Notfallkonzepts, um bei einem möglichen Ausfall von ITV weiterhin arbeitsfähig zu sein. 2. Ablösung ITV durch STV, hierbei Überführung und Konsolidierung der Dokumente (aktuell: ca. 4.500 Briefe in ITV). 3. Konsolidierung der Prozess- und Systemlandschaft im Umfeld des Outputmanagement. Neben der Neugestaltung eigener Prozesse und Systeme besteht ein weiterer wesentlicher Aspekt in der übergreifenden Abstimmung mit weiteren Projekten, zu welchen technische und organisatorische Schnittstellen und Abhängigkeiten bestehen.;OUTPUT;4595;3;10330;OUTPUT;software
+11503;Continuous Delivery;;b000990;Definition of Done: Aufgabe umgesetzt Tests geschrieben und erfolgreich Pull-Request erstellt und abgenommen Merge in Develop  Storypoints sind wie folgt definiert: 1: wenig Aufwand -> weniger als 1 Tag 3: mittlerer Aufwand -> 1-2 Tage 8: viel Aufwand -> mehr als 3 Tage  --> Bei 3 Vollzeitkräften max. 24 Storypoints pro Sprint;CD;2044;3;16722;CD;software
+11900;Classic Template;;b000675;;CLASSIC;858;3;10333;CLASSIC;software
+11902;Scrum Template;;b000675;;SCRUM;18;3;13016;SCRUM;software
+12213;0007 Sicherstellen der Abschlussprozesse VT Leben;;b000124;"am 27.05.2019 umbenannt von ""0007 Optimierung Abschlussprozesse""";OPTABSCH;119;3;10324;OPTABSCH;software
+12214;0234 Integration ProRis-RV-Leben;;b000515;;NRLEBEN;573;3;10324;NRLEBEN;software
+12250;Linie AE-BT;;b000424;Dieses Projekt enthält alle Linienaufgaben der AE-BT  Hier werden die Wartungs- und Weiterentwicklungsaktivitäten beauftragt und gebucht.;BT;6563;3;14250;BT;software
+12251;Linie AE-LK;;b000124;;LK;3178;3;10324;LK;software
+12252;Linie AE-PRO;;b001090;;PRO;5086;3;10324;PRO;software
+12253;Linie AE-SHUK;;b000861;;SHUK;3521;3;10324;SHUK;software
+12254;Linie AE-FIN ;;b000013;;FIN;3186;3;10324;VKON;software
+12903;0089 AKAB-Neue Prozesswelt;;b002199;;AKABL;37072;3;10324;AKABL;software
+13501;0237 Einführung Com:N;;b003069;"Projektname auf Anforderung von BO-PPM von ""0237 Neues Standard-Provisionssystem"" geändert in ""0237 Einführung Com:N""";NSPS;4031;2;10324;NSPS;software
+14006;0276 EFFZE:N;;b003069;;EBEKOM;40476;3;10324;EBEKOM;software
+14414;0386 Robotics;;b003069;;ROBO20;3126;2;18400;ROBO20;software
+15401;0427 SCHDN 2.0;;b001411;;SCHDN20;13;3;10324;SCHDN20;software
+15900;0426 Verschmelzung NBL-NLV;NULL;b003069;;NBLNLV;35;3;10324;NBLNLV;software
+16001;0417 Bestandsführung Lebe:N;;b003069;;WELF;2290;3;10324;WELF;software
+16103;0440 Ausbau Digitalisierung HR-Prozesse;NULL;b001680;;ADHRP;757;3;10324;ADHRP;software
+17300;Linie AE-KV;NULL;b001064;;KV;715;3;10324;KV;software
+17600;0436 NKV-Anbindung Telematikinfrastruktur;NULL;b001064;;NATI;110;3;10324;NATI;software
+17801;0446 Digitale Rentenübersicht;;b000674;;DRENT;1;3;10324;DRENT;software
+17903;0456 Einführung RAN und TaxData;NULL;b000674;;RUTD;74;3;10324;RUTD;software
+17908;0464 Dok:N;;b003069;;MITV;206;3;10324;MITV;software
+18200;0433 Cash Management;NULL;b000907;;CASHM;472;3;10324;CASHM;software
+20000;0469 Einführung bKV Portal;NULL;b000424;;EBKVP;44;3;10324;EBKVP;software
+20102;0471 Einführung SIEM-System;NULL;b003069;;SIEM;2;3;10324;SIEM;software
+20200;Linie AE-BIACC;NULL;b002154;;LBIA;1051;3;10324;LBIA;software
+20201;0468 Modern IT-Workplace mit Microsoft 365;NULL;b003069;;M365;3;3;10324;M365;software
+20800;0472 neue Steuermeldung Krankheitskostenversicherung;NULL;b001064;;NSKKV;28;3;10324;NSKKV;software
+21000;0473 CSRD Nachhaltigkeitsberichterstattung;NULL;b001391;;CSRD;24;3;10324;CSRD;software
+21601;Anforderungsmanagement Tech Stream;;b003069;;AMTECHST;558;2;10324;AMTECHST;software
+21800;Linie AE-COMN;NULL;b000983;;COMN;343;3;10324;COMN;software
+21801;Linie AE-COCO;NULL;b000895;;COCO;38;3;10324;COCO;software
+21802;Linie AE-ZV;NULL;b000308;;ZV;90;3;10324;ZV;software
+21803;Linie AE-HR;NULL;b001136;;HR;90;3;10324;HR;software
+21900;0476 SalesN:avi;NULL;b003069;;SALN;32;3;10324;SALN;software
+22000;0477 NUSI;NULL;b000861;;NUSI;56;3;10324;NUSI;software
+22001;0481 BTpur;NULL;b000424;;BTPUR;624;3;10324;BTPUR;software
+22002;0482 Update IT-Infrastruktur;NULL;b000424;;UPIN;25;3;10324;UPIN;software
+22004;0480 DORA;;b002140;Aus der DORA ergeben sich neue, über die VAIT hinausgehende weitreichende Anforderungen für die IT und IT-Governance und die Steuerung von IKT-Risiken und IKT-Dienstleistern.  In einer Vorstudie in 2023 wurde durch eine FIT-GAP-Analyse identifiziert, für welche Anforderungen aus der DORA-Verordnung die Nürnberger bereits Maßnahmen etabliert hat und an welchen Stellen noch Handlungsbedarf besteht. Als Ergebnis aus der Vorstudie wurde ein konkreter Maßnahmenkatalog (58 Maßnahmen) sowie eine Umsetzungsplanung für das Jahr 2024 entwickelt. ;DORA;33;3;34403;DORA;software
+22005;0475 XEMPUS bEKS;NULL;b000424;;XEMP;2;3;10324;XEMP;software
+22100;Linie AE-CST;NULL;b003069;;CST;88;3;10324;CST;software
+22200;0442 HR-Suite (Vorstudie);NULL;b001680;;HRS;2;3;10324;HRS;software
+22301;Komposit;NULL;b001849;;KOMP;2921;3;10324;KOMP;software
+22502;0485 Produktpaket Leben 01.2025;NULL;b003069;;PPL25;86;3;10324;PPL25;software
+22503;0484 Barrierefreiheitsstärkungsgesetz;NULL;b003069;;BFSG;15;3;10324;BFSG;software
+22800;0487 Pluto;NULL;b001337;;PLUTO;11;3;10324;PLUTO;software
+22900;0489 eVB Systemerneuerung;NULL;b000424;;EVBSE;72;3;10324;EVBSE;software
+22901;0488 Vorstudie Ablösung VICOS;NULL;b002154;;VAV;27;3;10324;VAV;software
