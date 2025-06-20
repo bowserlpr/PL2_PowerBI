@@ -89,36 +89,6 @@ def get_df(conn, sql):
     #df = df.astype("object").where(pd.notna(df), None)
     return df
 
-def validate_source_df(df, table_name, required_columns=None):
-    if required_columns is None:
-        required_columns = df.columns.tolist()
-
-    invalid_rows = df[df[required_columns].isna().any(axis=1)]
-    if invalid_rows.empty:
-      return df
-
-    invalid_rows_str = invalid_rows.astype(str).fillna("")
-    log_path = os.path.join(log_dir, f"{table_name}_log.csv")
-    if os.path.exists(log_path):
-        try:
-            existing_log = pd.read_csv(log_path, sep=";", dtype=str, na_filter=False)
-            combined = pd.concat([invalid_rows_str, existing_log])
-            new_invalids = combined.drop_duplicates(keep=False)
-        except Exception as e:
-            print(f"Log konnte nicht gelesen werden ({e}). Es wird komplett neu geloggt.")
-            new_invalids = invalid_rows.astype(str)
-    else:
-        new_invalids = invalid_rows.astype(str)
-
-    if not new_invalids.empty:
-        write_mode = "a" if os.path.exists(log_path) else "w"
-        header = not os.path.exists(log_path)
-        new_invalids.to_csv(log_path, mode=write_mode, sep=";", index=False, header=header, lineterminator="\n")
-        print(f" {len(new_invalids)} neue ungültige Zeilen wurden nach {log_path} geschrieben.")
-    
-
-    return df.drop(index=invalid_rows.index)
-
 def employee_import(conn, df_update, table_name="mitarbeiter"):
     gültig_von = date.today().replace(day=1)
     gültig_bis = (date.today().replace(day=1) - timedelta(days=1))
@@ -167,12 +137,9 @@ def assign_mitarbeiter_to_worklog(df_worklog, df_mitarbeiter):
       (df_merged["Startzeitpunkt"] >= df_merged["Gueltig_von"]) &
       (df_merged["Startzeitpunkt"] <= df_merged["Gueltig_bis"])
   ].copy()
- # df_filtered["Mitarbeiter_ID"] = df_filtered["Mitarbeiter_ID"].astype(int)
   cols = [col for col in df_worklog.columns if col != "PNR"]
   df_result = df_filtered[cols + ["Mitarbeiter_ID"]]
-  
-  
-  
+
   return df_result
 
 def ensure_dummy_in_df(df, expected_name="keine Buchung", key_column=None, id_val=None, name_col=None):
@@ -294,15 +261,11 @@ df_source_mitarbeiter = df_source_mitarbeiter.astype("object").where(pd.notna(df
 kostenstelle = (df_mitarbeiterliste[["Kostenstellennummer","Kostenstellenbezeichnung"]])
 kostenstelle = kostenstelle.rename(columns={"Kostenstellennummer":"Kostenstellen_ID"})
 kostenstelle = kostenstelle.drop_duplicates()
-kostenstelleColumns = ','.join(kostenstelle.columns)
-kostenstelleValues=','.join(['%s' for i in kostenstelle.columns])
 df_source_kostenstelle = kostenstelle[kostenstelle["Kostenstellen_ID"].notnull()]
 
 abteilung = (df_mitarbeiterliste[["OE-Nummer","OE-Bezeichnung"]])
 abteilung = abteilung.rename(columns={"OE-Nummer":"Abteilungs_ID","OE-Bezeichnung":"Abteilungsbezeichnung"})
 abteilung = abteilung.drop_duplicates()
-abteilungColumns = ','.join(abteilung.columns)
-abteilungValues=','.join(['%s' for i in abteilung.columns])
 df_source_abteilung = abteilung[abteilung["Abteilungs_ID"].notnull()]
 
 #####################################
@@ -360,57 +323,6 @@ df_target_worklog = get_df(datawarehousedb, sql)
 ######################################
 # Transform Data
 ######################################
-def debug_df_diff(df_source, df_target, key_column):
-    merged = df_source.merge(df_target, on=key_column, how='left', suffixes=('', '_target'))
-    
-    # Zeilen, die als "neu" erkannt würden
-    only_in_source = merged[merged[[col for col in df_target.columns if col != key_column + "_target"]].isna().all(axis=1)]
-
-    print(f"Gefundene neue Zeilen laut Vergleich (nur in Quelle): {len(only_in_source)}")
-
-    for _, row in only_in_source.iterrows():
-        key = row[key_column]
-        print(f"\n🔍 Vergleich für Schlüssel {key}:")
-
-        try:
-            row_target = df_target[df_target[key_column] == key].iloc[0]
-        except IndexError:
-            print("→ Kein Zielwert vorhanden.")
-            continue
-
-        for col in df_source.columns:
-            source_val = row[col]
-            target_val = row_target[col] if col in row_target else "N/A"
-            print(f"{col}: source='{source_val}' ({type(source_val)}) | target='{target_val}' ({type(target_val)})")
-def debug_df_updates(df_source, df_target, key_column, compare_columns=None):
-    if compare_columns is None:
-        compare_columns = [col for col in df_source.columns if col != key_column]
-    # Merge beide DataFrames
-    merged = df_source.merge(df_target, on=key_column, how='inner', suffixes=('', '_target'))
-
-    # Finde Zeilen, bei denen sich Werte in den compare_columns unterscheiden
-    for _, row in merged.iterrows():
-        differing = False
-        diffs = []
-        for col in compare_columns:
-            val_source = row[col]
-            val_target = row[f"{col}_target"]
-
-            # Vergleich über str für konsistentes Verhalten
-            if pd.isna(val_source) and pd.isna(val_target):
-                continue
-            if str(val_source) != str(val_target):
-                differing = True
-                diffs.append(f"{col}: source='{val_source}' ({type(val_source).__name__}) vs target='{val_target}' ({type(val_target).__name__})")
-        
-        if differing:
-            print(f"\n🔁 Unterschiede für {key_column}={row[key_column]} gefunden:")
-            for diff in diffs:
-                print("  " + diff)
-
-
-
-
 
 df_insert_mitarbeiter, df_update_mitarbeiter = get_df_diff(df_source_mitarbeiter, df_target_mitarbeiter,key_column="PNR", compare_columns=["Vorname", "Nachname", "Kostenstellen_ID", "Abteilungs_ID"])
 df_insert_mitarbeiter["Gueltig_von"] = date.today().replace(day=1)
@@ -431,11 +343,6 @@ df_source_worklog = assign_mitarbeiter_to_worklog(df_source_worklog, df_current_
 df_source_worklog = df_source_worklog[df_target_worklog.columns]
 
 df_insert_worklog, df_update_worklog = get_df_diff(df_source_worklog, df_target_worklog)
-
-print("worklog:")
-print(f"target: {(df_target_worklog)}")
-print(f"source: {(df_source_worklog)}")
-
 df_insert_abteilung, df_update_abteilung = get_df_diff(df_source_abteilung, df_target_abteilung)
 df_insert_buchungstyp, df_update_buchungstyp = get_df_diff(df_source_buchungstyp, df_target_buchungstyp)
 df_insert_jiraissue, df_update_jiraissue = get_df_diff(df_source_jiraissue, df_target_jiraissue)
@@ -447,9 +354,6 @@ df_insert_sap, df_update_sap = get_df_diff(df_source_sap, df_target_sap)
 #####################################
 # Load into Data Warehouse
 #####################################
-
-print("issues:")
-print(f"Insert: {(df_update_jiraissue)}")
 
 apply_df_diff(datawarehousedb, "projekt", df_insert_project, df_update_project)
 apply_df_diff(datawarehousedb, "kostenstelle", df_insert_kostenstelle, df_update_kostenstelle)
