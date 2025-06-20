@@ -27,12 +27,12 @@ datamartdb = mysql.connector.connect(
 #####################################
 
 def ensure_dummy_in_df(df, expected_name="keine Buchung", key_column=None, id_val=None, name_col=None):
-    # Suche Zeile mit der Dummy-ID
     if key_column is None:
       key_column = df.columns[0]
 
     name_columns = [name_col] if name_col else [col for col in df.columns if col != key_column]
 
+    #Wenn Dummywert nicht angegeben, dann anhand des Typs bestimmen
     if id_val is None:
         sample_type = type(df[key_column].iloc[0])
         if sample_type in [int, np.int64, np.int32]:
@@ -44,6 +44,7 @@ def ensure_dummy_in_df(df, expected_name="keine Buchung", key_column=None, id_va
         else:
             id_val = "-1"
 
+    # suche nach Dummy
     dummy_row = df[df[key_column] == id_val]
 
     if dummy_row.empty:
@@ -51,16 +52,11 @@ def ensure_dummy_in_df(df, expected_name="keine Buchung", key_column=None, id_va
         new_row = {col: expected_name for col in name_columns}
         new_row[key_column] = id_val
         df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
-        print(f"Dummy ({id_val}) eingefügt.")
     else:
         # Werte aktualisieren, wenn ungleich
         for col in name_columns:
             if dummy_row.iloc[0][col] != expected_name:
-                df.loc[df[key_column] == id_val, col] = expected_name
-                print(f"Dummy ({id_val}) Spalte '{col}' korrigiert.")
-        if all(dummy_row.iloc[0][col] == expected_name for col in name_columns):
-            print(f"Dummy ({id_val}) bereits korrekt.")
-
+                df.loc[df[key_column] == id_val, col] = expected_nameD
     return df
 
 def get_df_diff(df_source, df_target, key_column=None, compare_columns=None):
@@ -201,16 +197,21 @@ ORDER BY Zeitstempel, p.Projekt_ID, PNR;
 df_source_fact_buchungen = get_df(datawarehousedb, sql)
 df_source_fact_buchungen['Zeitstempel'] = pd.to_datetime(df_source_fact_buchungen['Zeitstempel'])
 
+#Monatswerte generieren
 months = pd.date_range(start='2024-06-01', end=pd.Timestamp.today(), freq='MS')
+#Alle Projekte extrahieren
 projects = df_source_fact_buchungen['Projekt_ID'].unique()
 
+#Projekte rausfiltern, die gar keine Buchungen haben. Diese werden später ergänzt
 df_source_fact_buchungen = df_source_fact_buchungen[df_source_fact_buchungen['Zeitstempel'].notna()]
 
+# Alle Kombinationen von Monaten und Projekten erstellen
 projects_months = pd.MultiIndex.from_product(
     [months, projects],
     names=['Zeitstempel', 'Projekt_ID']
 ).to_frame(index=False)
 
+# Nur die monate rausfiltern, die in den Monaten noch fehlen
 missing_projects_months = pd.merge(
     projects_months,
     df_source_fact_buchungen,
@@ -219,10 +220,12 @@ missing_projects_months = pd.merge(
     indicator=True
 ).query("_merge == 'left_only'").drop(columns="_merge")
 
+# Fehlende Monate und Projekte mit Dummy-Werten auffüllen
 missing_projects_months['PNR'] = "-1"
 missing_projects_months['Abteilungs_ID'] = "-1"
 missing_projects_months['Gebuchte_Zeit'] = Decimal("0.0")
 
+# Fehlende Monate und Projekte zu den bestehenden Daten hinzufügen
 df_source_fact_buchungen = pd.concat([df_source_fact_buchungen, missing_projects_months], ignore_index=True)
 
 
@@ -230,12 +233,12 @@ sql = """
     SELECT 
         DATE_FORMAT(DATE(wl.Startzeitpunkt), '%Y-%m-01') AS Zeitstempel,
         ROUND(SUM(wl.Gebuchte_Zeit) / 3600, 1) AS Gebuchte_Zeit,
-        IFNULL(m.PNR, -1) AS PNR,
-        IFNULL(m.Abteilungs_ID, -1) AS Abteilungs_ID,
+        m.PNR,
+        m.Abteilungs_ID,
         p.Projekt_ID,
-        IFNULL(ji.Buchungstyp_ID, -1) AS Buchungstyp_ID,
-        IFNULL(m.Kostenstellen_ID, -1) AS Kostenstellen_ID,
-        IFNULL(ji.SAP_Anwendungssystem_ID, -1) AS SAP_Anwendungssystem_ID
+        ji.Buchungstyp_ID,
+        m.Kostenstellen_ID,
+        ji.SAP_Anwendungssystem_ID
     FROM projekt p
     JOIN jiraissue ji ON ji.Projekt_ID = p.Projekt_ID
     JOIN worklog wl ON wl.Issue_ID = ji.Issue_ID

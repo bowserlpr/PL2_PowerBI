@@ -48,7 +48,7 @@ def employee_import(conn, df_update, table_name="mitarbeiter"):
             SET Gueltig_bis = %s
             WHERE PNR = %s AND Gueltig_bis IS NULL
         """, (gültig_bis, row['PNR']))
-        
+
         # Füge neuen Datensatz mit Gültig_von und NULL für Gültig_bis ein
         cursor.execute(f"""
             INSERT INTO {table_name}
@@ -129,8 +129,6 @@ df_target_kostenstelle = get_df(datawarehousedb, sql)
 df_mitarbeiterliste_initial = pd.read_csv(path_mitarbeiterliste_initial,sep=';',quotechar='\'',encoding='utf8', dtype=str)
 mitarbeiter = (df_mitarbeiterliste_initial[["PNR","Vorname","Nachname","Kostenstellennummer","OE-Nummer"]])
 mitarbeiter = mitarbeiter.rename(columns={"Kostenstellennummer":"Kostenstellen_ID","OE-Nummer":"Abteilungs_ID"})
-mitarbeiterColumns = ','.join(mitarbeiter.columns)
-mitarbeiterValues=','.join(['%s' for i in mitarbeiter.columns])
 df_source_mitarbeiter = mitarbeiter.where(pd.notnull(mitarbeiter), None)
 df_source_mitarbeiter = df_source_mitarbeiter.astype("object").where(pd.notna(df_source_mitarbeiter), None)
 
@@ -138,15 +136,11 @@ df_source_mitarbeiter = df_source_mitarbeiter.astype("object").where(pd.notna(df
 kostenstelle = (df_mitarbeiterliste_initial[["Kostenstellennummer","Kostenstellenbezeichnung"]])
 kostenstelle = kostenstelle.rename(columns={"Kostenstellennummer":"Kostenstellen_ID"})
 kostenstelle = kostenstelle.drop_duplicates()
-kostenstelleColumns = ','.join(kostenstelle.columns)
-kostenstelleValues=','.join(['%s' for i in kostenstelle.columns])
 df_source_kostenstelle = kostenstelle[kostenstelle["Kostenstellen_ID"].notnull()]
 
 abteilung = (df_mitarbeiterliste_initial[["OE-Nummer","OE-Bezeichnung"]])
 abteilung = abteilung.rename(columns={"OE-Nummer":"Abteilungs_ID","OE-Bezeichnung":"Abteilungsbezeichnung"})
 abteilung = abteilung.drop_duplicates()
-abteilungColumns = ','.join(abteilung.columns)
-abteilungValues=','.join(['%s' for i in abteilung.columns])
 df_source_abteilung = abteilung[abteilung["Abteilungs_ID"].notnull()]
 
 
@@ -164,8 +158,6 @@ apply_df_diff(datawarehousedb, "abteilung", df_insert_abteilung, df_update_abtei
 
 apply_df_diff(datawarehousedb, "mitarbeiter", df_insert_mitarbeiter)
 employee_import(datawarehousedb, df_update_mitarbeiter)
-
-print(df_insert_mitarbeiter)
 
 
 ###############
